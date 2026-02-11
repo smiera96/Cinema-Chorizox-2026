@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Películas de viajes en el tiempo</title>
+  <style>
+    :root{
+      --bg: #0b1020;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.10);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --border: rgba(255,255,255,.14);
+      --shadow: 0 12px 35px rgba(0,0,0,.45);
+      --radius: 16px;
+    }
+
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1200px 700px at 20% 0%, rgba(98, 77, 255, .28), transparent 60%),
+                  radial-gradient(900px 600px at 100% 30%, rgba(0, 180, 216, .18), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header{
+      padding: 28px 16px 10px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    h1{
+      margin: 0 0 8px;
+      font-size: clamp(1.35rem, 3vw, 2rem);
+      letter-spacing: .2px;
+    }
+    p{
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: .98rem;
+    }
+
+    main{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 16px 40px;
+    }
+
+    .grid{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .card{
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,.04));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .poster{
+      position: relative;
+      aspect-ratio: 2 / 3;
+      background: rgba(255,255,255,.06);
+      overflow: hidden;
+    }
+    .poster img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transform: scale(1.01);
+    }
+
+    .content{
+      padding: 14px 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .title{
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin: 0;
+    }
+
+    .actions{
+      display: flex;
+      gap: 10px;
+      margin-top: auto;
+      flex-wrap: wrap;
+    }
+
+    .btn{
+      appearance: none;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 650;
+      transition: transform .08s ease, background .15s ease, border-color .15s ease;
+      flex: 1;
+      min-width: 140px;
+      text-align: center;
+      user-select: none;
+    }
+    .btn:hover{ background: var(--card2); }
+    .btn:active{ transform: translateY(1px); }
+    .btn:focus-visible{
+      outline: 3px solid rgba(98,77,255,.55);
+      outline-offset: 2px;
+    }
+
+    .btn.secondary{
+      background: transparent;
+    }
+
+    /* Modal */
+    .modal{
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      background: rgba(0,0,0,.66);
+      backdrop-filter: blur(6px);
+      z-index: 999;
+    }
+    .modal[open]{
+      display: flex;
+    }
+    .modal-card{
+      width: min(980px, 100%);
+      background: rgba(15, 20, 40, .92);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .modal-head{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-head strong{
+      font-size: 1rem;
+    }
+    .close{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .close:hover{ background: var(--card2); }
+
+    .video{
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+    }
+    .video iframe{
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .modal-foot{
+      padding: 12px 14px 14px;
+      color: var(--muted);
+      font-size: .95rem;
+      line-height: 1.45;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+    }
+    .modal-foot a{
+      color: rgba(160, 190, 255, .95);
+      text-decoration: none;
+      border-bottom: 1px dashed rgba(160, 190, 255, .55);
+    }
+    .modal-foot a:hover{
+      border-bottom-color: rgba(160, 190, 255, .95);
+    }
+
+    @media (max-width: 420px){
+      header{ padding-top: 22px; }
+      .btn{ min-width: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .btn{ transition: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Cinema Chorizox</h1>
+    <p>Sergio</p>
+  </header>
+
+  <main>
+    <section class="grid" aria-label="Listado de películas">
+      <!-- 1) Looper -->
+      <article class="card">
+        <div class="poster">
+          <img loading="lazy"
+               src="https://upload.wikimedia.org/wikipedia/en/0/0a/Looper_poster.jpg"
+               alt="Portada de Looper">
+        </div>
+        <div class="content">
+          <h2 class="title">Looper</h2>
+          <div class="actions">
+            <button class="btn js-trailer"
+                    data-title="Looper — Tráiler (castellano)"
+                    data-youtube="f65eLlHUzVY">
+              ▶ Ver tráiler
+            </button>
+            <a class="btn secondary"
+               href="https://www.youtube.com/watch?v=f65eLlHUzVY"
+               target="_blank" rel="noopener noreferrer">
+              ↗ Abrir en YouTube
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2) Source Code -->
+      <article class="card">
+        <div class="poster">
+          <img loading="lazy"
+               src="https://upload.wikimedia.org/wikipedia/en/e/e5/Source_Code_Poster.jpg"
+               alt="Portada de Source Code (Código fuente)">
+        </div>
+        <div class="content">
+          <h2 class="title">Source Code (Código fuente)</h2>
+          <div class="actions">
+            <button class="btn js-trailer"
+                    data-title="Código fuente — Tráiler (castellano)"
+                    data-youtube="NXE5SCHzPkU">
+              ▶ Ver tráiler
+            </button>
+            <a class="btn secondary"
+               href="https://www.youtube.com/watch?v=NXE5SCHzPkU"
+               target="_blank" rel="noopener noreferrer">
+              ↗ Abrir en YouTube
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3) Boss Level -->
+      <article class="card">
+        <div class="poster">
+          <img loading="lazy"
+               src="https://upload.wikimedia.org/wikipedia/en/1/13/Boss_Level_poster.jpg"
+               alt="Portada de Boss Level">
+        </div>
+        <div class="content">
+          <h2 class="title">Boss Level</h2>
+          <div class="actions">
+            <button class="btn js-trailer"
+                    data-title="Boss Level — Tráiler (castellano)"
+                    data-youtube="AnawSJQ_z5c">
+              ▶ Ver tráiler
+            </button>
+            <a class="btn secondary"
+               href="https://www.youtube.com/watch?v=AnawSJQ_z5c"
+               target="_blank" rel="noopener noreferrer">
+              ↗ Abrir en YouTube
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 4) 12 Monos -->
+      <article class="card">
+        <div class="poster">
+          <img loading="lazy"
+               src="https://upload.wikimedia.org/wikipedia/en/c/cf/Twelve_monkeysmp.jpg"
+               alt="Portada de 12 Monos">
+        </div>
+        <div class="content">
+          <h2 class="title">12 Monos</h2>
+          <div class="actions">
+            <button class="btn js-trailer"
+                    data-title="12 Monos — Tráiler (castellano)"
+                    data-youtube="tSQonjDo9Jk">
+              ▶ Ver tráiler
+            </button>
+            <a class="btn secondary"
+               href="https://www.youtube.com/watch?v=tSQonjDo9Jk"
+               target="_blank" rel="noopener noreferrer">
+              ↗ Abrir en YouTube
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 5) Equilibrium -->
+      <article class="card">
+        <div class="poster">
+          <img loading="lazy"
+               src="https://upload.wikimedia.org/wikipedia/en/f/f6/Equilibriumposter.jpg"
+               alt="Portada de Equilibrium">
+        </div>
+        <div class="content">
+          <h2 class="title">Equilibrium</h2>
+          <div class="actions">
+            <button class="btn js-trailer"
+                    data-title="Equilibrium — Tráiler (castellano)"
+                    data-youtube="lnBaXOIsiEk">
+              ▶ Ver tráiler
+            </button>
+            <a class="btn secondary"
+               href="https://www.youtube.com/watch?v=lnBaXOIsiEk"
+               target="_blank" rel="noopener noreferrer">
+              ↗ Abrir en YouTube
+            </a>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <!-- Modal -->
+  <div class="modal" id="trailerModal" role="dialog" aria-modal="true" aria-label="Reproductor del tráiler">
+    <div class="modal-card">
+      <div class="modal-head">
+        <strong id="modalTitle">Tráiler</strong>
+        <button class="close" id="closeModal" aria-label="Cerrar">✕</button>
+      </div>
+
+      <div class="video">
+        <!-- Cargamos el src al abrir para que no “pese” la página -->
+        <iframe id="ytFrame"
+                title="Tráiler"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+      </div>
+
+      <div class="modal-foot">
+        <span>Si no se reproduce aquí, ábrelo en YouTube.</span>
+        <a id="openOnYoutube" href="#" target="_blank" rel="noopener noreferrer">Abrir tráiler en YouTube ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.getElementById('trailerModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const ytFrame = document.getElementById('ytFrame');
+    const closeBtn = document.getElementById('closeModal');
+    const openOnYoutube = document.getElementById('openOnYoutube');
+
+    function openModal({ title, youtubeId }) {
+      modalTitle.textContent = title;
+
+      // Autoplay + parámetros “limpios”
+      const embed = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1`;
+      ytFrame.src = embed;
+
+      openOnYoutube.href = `https://www.youtube.com/watch?v=${youtubeId}`;
+
+      modal.setAttribute('open', '');
+      document.body.style.overflow = 'hidden';
+      closeBtn.focus();
+    }
+
+    function closeModal() {
+      modal.removeAttribute('open');
+      document.body.style.overflow = '';
+      ytFrame.src = ''; // para parar el vídeo
+    }
+
+    // Abrir modal
+    document.querySelectorAll('.js-trailer').forEach(btn => {
+      btn.addEventListener('click', () => {
+        openModal({
+          title: btn.dataset.title || 'Tráiler',
+          youtubeId: btn.dataset.youtube
+        });
+      });
+    });
+
+    // Cerrar modal
+    closeBtn.addEventListener('click', closeModal);
+
+    // Cerrar al clicar fuera
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // Cerrar con ESC
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.hasAttribute('open')) closeModal();
+    });
+  </script>
+</body>
+</html>
