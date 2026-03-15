@@ -278,24 +278,26 @@
         </div>
       </article>
 
-      <!-- 3) Boss Level -->
-      <article class="card">
+      <!-- 3) Dinámica cookie: primera vez El afilador, luego Boss Level -->
+      <article class="card" id="dynamicMovieCard">
         <div class="poster">
-          <img loading="lazy"
-               src="https://upload.wikimedia.org/wikipedia/en/1/13/Boss_Level_poster.jpg"
-               alt="Portada de Boss Level">
+          <img id="dynamicMovieImg" loading="lazy"
+               src="https://pics.filmaffinity.com/trailettos_el_afilador-757549158-mmed.jpg"
+               alt="Portada de El afilador">
         </div>
         <div class="content">
-          <h2 class="title">Boss Level 🔁🔫</h2>
-          <p>acción + comedia negra</p>
+          <h2 class="title" id="dynamicMovieTitle">El afilador 🪒🎬</h2>
+          <p id="dynamicMovieGenre">comedia + thriller</p>
           <div class="actions">
             <button class="btn js-trailer"
-                    data-title="Boss Level — Tráiler (castellano)"
-                    data-youtube="AnawSJQ_z5c">
+                    id="dynamicTrailerBtn"
+                    data-title="El afilador — Tráiler"
+                    data-youtube="8Ti_aoV2qYk">
               ▶ Ver tráiler
             </button>
             <a class="btn secondary"
-               href="https://www.youtube.com/watch?v=AnawSJQ_z5c"
+               id="dynamicYoutubeLink"
+               href="https://www.youtube.com/watch?v=8Ti_aoV2qYk"
                target="_blank" rel="noopener noreferrer">
               ↗ Abrir en YouTube
             </a>
@@ -364,7 +366,6 @@
       </div>
 
       <div class="video">
-        <!-- Cargamos el src al abrir para que no “pese” la página -->
         <iframe id="ytFrame"
                 title="Tráiler"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -385,15 +386,71 @@
     const closeBtn = document.getElementById('closeModal');
     const openOnYoutube = document.getElementById('openOnYoutube');
 
+    const dynamicMovieImg = document.getElementById('dynamicMovieImg');
+    const dynamicMovieTitle = document.getElementById('dynamicMovieTitle');
+    const dynamicMovieGenre = document.getElementById('dynamicMovieGenre');
+    const dynamicTrailerBtn = document.getElementById('dynamicTrailerBtn');
+    const dynamicYoutubeLink = document.getElementById('dynamicYoutubeLink');
+
+    const COOKIE_NAME = 'cinema_chorizox_first_visit_done';
+
+    const EL_AFILADOR = {
+      title: 'El afilador 🪒🎬',
+      genre: 'comedia + thriller',
+      modalTitle: 'El afilador — Tráiler',
+      youtubeId: '8Ti_aoV2qYk',
+      image: 'https://pics.filmaffinity.com/trailettos_el_afilador-757549158-mmed.jpg',
+      alt: 'Portada de El afilador'
+    };
+
+    const BOSS_LEVEL = {
+      title: 'Boss Level 🔁🔫',
+      genre: 'acción + comedia negra',
+      modalTitle: 'Boss Level — Tráiler (castellano)',
+      youtubeId: 'AnawSJQ_z5c',
+      image: 'https://upload.wikimedia.org/wikipedia/en/1/13/Boss_Level_poster.jpg',
+      alt: 'Portada de Boss Level'
+    };
+
+    function setCookie(name, value, maxAgeSeconds) {
+      document.cookie = `${name}=${encodeURIComponent(value)}; max-age=${maxAgeSeconds}; path=/; SameSite=Lax`;
+    }
+
+    function getCookie(name) {
+      const cookies = document.cookie ? document.cookie.split('; ') : [];
+      for (const cookie of cookies) {
+        const [key, ...rest] = cookie.split('=');
+        if (key === name) return decodeURIComponent(rest.join('='));
+      }
+      return null;
+    }
+
+    function applyMovie(movie) {
+      dynamicMovieImg.src = movie.image;
+      dynamicMovieImg.alt = movie.alt;
+      dynamicMovieTitle.textContent = movie.title;
+      dynamicMovieGenre.textContent = movie.genre;
+      dynamicTrailerBtn.dataset.title = movie.modalTitle;
+      dynamicTrailerBtn.dataset.youtube = movie.youtubeId;
+      dynamicYoutubeLink.href = `https://www.youtube.com/watch?v=${movie.youtubeId}`;
+    }
+
+    function setupDynamicMovie() {
+      const alreadyVisited = getCookie(COOKIE_NAME);
+
+      if (!alreadyVisited) {
+        applyMovie(EL_AFILADOR);
+        setCookie(COOKIE_NAME, '1', 3600); // 1 hora
+      } else {
+        applyMovie(BOSS_LEVEL);
+      }
+    }
+
     function openModal({ title, youtubeId }) {
       modalTitle.textContent = title;
-
-      // Autoplay + parámetros “limpios”
       const embed = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1`;
       ytFrame.src = embed;
-
       openOnYoutube.href = `https://www.youtube.com/watch?v=${youtubeId}`;
-
       modal.setAttribute('open', '');
       document.body.style.overflow = 'hidden';
       closeBtn.focus();
@@ -402,10 +459,11 @@
     function closeModal() {
       modal.removeAttribute('open');
       document.body.style.overflow = '';
-      ytFrame.src = ''; // para parar el vídeo
+      ytFrame.src = '';
     }
 
-    // Abrir modal
+    setupDynamicMovie();
+
     document.querySelectorAll('.js-trailer').forEach(btn => {
       btn.addEventListener('click', () => {
         openModal({
@@ -415,15 +473,12 @@
       });
     });
 
-    // Cerrar modal
     closeBtn.addEventListener('click', closeModal);
 
-    // Cerrar al clicar fuera
     modal.addEventListener('click', (e) => {
       if (e.target === modal) closeModal();
     });
 
-    // Cerrar con ESC
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && modal.hasAttribute('open')) closeModal();
     });
