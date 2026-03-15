@@ -129,6 +129,20 @@
       background: transparent;
     }
 
+    .prank-box{
+      display: none;
+      margin-top: 12px;
+    }
+
+    .prank-box.show{
+      display: block;
+    }
+
+    .prank-btn{
+      width: 100%;
+      flex: unset;
+    }
+
     /* Modal */
     .modal{
       position: fixed;
@@ -207,6 +221,10 @@
     }
     .modal-foot a:hover{
       border-bottom-color: rgba(160, 190, 255, .95);
+    }
+
+    .modal-prank-wrap{
+      padding: 0 14px 14px;
     }
 
     @media (max-width: 420px){
@@ -302,6 +320,10 @@
               ↗ Abrir en YouTube
             </a>
           </div>
+
+          <div class="prank-box" id="cardPrankBox">
+            <button class="btn prank-btn" id="refreshCardBtn">🤡🤡 Apretame para ver la película real</button>
+          </div>
         </div>
       </article>
 
@@ -376,6 +398,12 @@
         <span>Si no se reproduce aquí, ábrelo en YouTube.</span>
         <a id="openOnYoutube" href="#" target="_blank" rel="noopener noreferrer">Abrir tráiler en YouTube ↗</a>
       </div>
+
+      <div class="modal-prank-wrap">
+        <div class="prank-box" id="modalPrankBox">
+          <button class="btn prank-btn" id="refreshModalBtn">🤡🤡 Apretame para ver la película real</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -392,7 +420,14 @@
     const dynamicTrailerBtn = document.getElementById('dynamicTrailerBtn');
     const dynamicYoutubeLink = document.getElementById('dynamicYoutubeLink');
 
+    const cardPrankBox = document.getElementById('cardPrankBox');
+    const modalPrankBox = document.getElementById('modalPrankBox');
+    const refreshCardBtn = document.getElementById('refreshCardBtn');
+    const refreshModalBtn = document.getElementById('refreshModalBtn');
+
     const COOKIE_NAME = 'cinema_chorizox_first_visit_done';
+    let isFirstVisit = false;
+    let prankVisible = false;
 
     const EL_AFILADOR = {
       title: 'El afilador 🪒🎬',
@@ -435,13 +470,28 @@
       dynamicYoutubeLink.href = `https://www.youtube.com/watch?v=${movie.youtubeId}`;
     }
 
+    function showPrankCta() {
+      prankVisible = true;
+      cardPrankBox.classList.add('show');
+
+      if (modal.hasAttribute('open') && openOnYoutube.href.includes(EL_AFILADOR.youtubeId)) {
+        modalPrankBox.classList.add('show');
+      }
+    }
+
     function setupDynamicMovie() {
       const alreadyVisited = getCookie(COOKIE_NAME);
 
       if (!alreadyVisited) {
+        isFirstVisit = true;
         applyMovie(EL_AFILADOR);
         setCookie(COOKIE_NAME, '1', 3600); // 1 hora
+
+        setTimeout(() => {
+          showPrankCta();
+        }, 45000);
       } else {
+        isFirstVisit = false;
         applyMovie(BOSS_LEVEL);
       }
     }
@@ -451,6 +501,13 @@
       const embed = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1`;
       ytFrame.src = embed;
       openOnYoutube.href = `https://www.youtube.com/watch?v=${youtubeId}`;
+
+      if (isFirstVisit && prankVisible && youtubeId === EL_AFILADOR.youtubeId) {
+        modalPrankBox.classList.add('show');
+      } else {
+        modalPrankBox.classList.remove('show');
+      }
+
       modal.setAttribute('open', '');
       document.body.style.overflow = 'hidden';
       closeBtn.focus();
@@ -460,6 +517,10 @@
       modal.removeAttribute('open');
       document.body.style.overflow = '';
       ytFrame.src = '';
+    }
+
+    function refreshPage() {
+      window.location.reload();
     }
 
     setupDynamicMovie();
@@ -472,6 +533,9 @@
         });
       });
     });
+
+    refreshCardBtn.addEventListener('click', refreshPage);
+    refreshModalBtn.addEventListener('click', refreshPage);
 
     closeBtn.addEventListener('click', closeModal);
 
