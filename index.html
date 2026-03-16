@@ -246,27 +246,33 @@
 
   <main>
     <section class="grid" aria-label="Listado de películas">
-      <!-- 1) Looper -->
-      <article class="card">
+      <!-- 1) Dinámica cookie: primera vez El afilador, luego Boss Level -->
+      <article class="card" id="dynamicMovieCard">
         <div class="poster">
-          <img loading="lazy"
-               src="https://upload.wikimedia.org/wikipedia/en/0/0a/Looper_poster.jpg"
-               alt="Portada de Looper">
+          <img id="dynamicMovieImg" loading="lazy"
+               src="https://pics.filmaffinity.com/trailettos_el_afilador-757549158-mmed.jpg"
+               alt="Portada de El afilador">
         </div>
         <div class="content">
-          <h2 class="title">Looper 🔫🕰️🧩</h2>
-          <p>acción + thriller</p>
+          <h2 class="title" id="dynamicMovieTitle">El afilador 🪒🎬</h2>
+          <p id="dynamicMovieGenre">comedia + thriller</p>
           <div class="actions">
             <button class="btn js-trailer"
-                    data-title="Looper — Tráiler (castellano)"
-                    data-youtube="f65eLlHUzVY">
+                    id="dynamicTrailerBtn"
+                    data-title="El afilador — Tráiler"
+                    data-youtube="8Ti_aoV2qYk">
               ▶ Ver tráiler
             </button>
             <a class="btn secondary"
-               href="https://www.youtube.com/watch?v=f65eLlHUzVY"
+               id="dynamicYoutubeLink"
+               href="https://www.youtube.com/watch?v=8Ti_aoV2qYk"
                target="_blank" rel="noopener noreferrer">
               ↗ Abrir en YouTube
             </a>
+          </div>
+
+          <div class="prank-box" id="cardPrankBox">
+            <button class="btn prank-btn" id="refreshCardBtn">🤡🤡 Apriétame para ver la película real</button>
           </div>
         </div>
       </article>
@@ -296,33 +302,27 @@
         </div>
       </article>
 
-      <!-- 3) Dinámica cookie: primera vez El afilador, luego Boss Level -->
-      <article class="card" id="dynamicMovieCard">
+      <!-- 3) Looper -->
+      <article class="card">
         <div class="poster">
-          <img id="dynamicMovieImg" loading="lazy"
-               src="https://pics.filmaffinity.com/trailettos_el_afilador-757549158-mmed.jpg"
-               alt="Portada de El afilador">
+          <img loading="lazy"
+               src="https://upload.wikimedia.org/wikipedia/en/0/0a/Looper_poster.jpg"
+               alt="Portada de Looper">
         </div>
         <div class="content">
-          <h2 class="title" id="dynamicMovieTitle">El afilador 🪒🎬</h2>
-          <p id="dynamicMovieGenre">comedia + thriller</p>
+          <h2 class="title">Looper 🔫🕰️🧩</h2>
+          <p>acción + thriller</p>
           <div class="actions">
             <button class="btn js-trailer"
-                    id="dynamicTrailerBtn"
-                    data-title="El afilador — Tráiler"
-                    data-youtube="8Ti_aoV2qYk">
+                    data-title="Looper — Tráiler (castellano)"
+                    data-youtube="f65eLlHUzVY">
               ▶ Ver tráiler
             </button>
             <a class="btn secondary"
-               id="dynamicYoutubeLink"
-               href="https://www.youtube.com/watch?v=8Ti_aoV2qYk"
+               href="https://www.youtube.com/watch?v=f65eLlHUzVY"
                target="_blank" rel="noopener noreferrer">
               ↗ Abrir en YouTube
             </a>
-          </div>
-
-          <div class="prank-box" id="cardPrankBox">
-            <button class="btn prank-btn" id="refreshCardBtn">🤡🤡 Apriétame para ver la película real</button>
           </div>
         </div>
       </article>
